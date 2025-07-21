@@ -30,13 +30,14 @@ public class CardRotator : MonoBehaviour
         targetRotation = showCard == false ? startRotation : endRotation;
         startRotation = transform.rotation;
 
-        Debug.Log($"endRotation: {targetRotation.eulerAngles}, startRotation: {startRotation.eulerAngles}");
 
         startFlipping = true;
         enabled = startFlipping;
 
         if (this.onComplete != null)
+        {
             this.onComplete = null;
+        }
 
         this.onComplete = onComplete;
     }
@@ -57,10 +58,5 @@ public class CardRotator : MonoBehaviour
             transform.rotation = targetRotation;
             onComplete?.Invoke();
         }
-    }
-
-    private void OnDisable()
-    {
-        this.onComplete = null;
     }
 }

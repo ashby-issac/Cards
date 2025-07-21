@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] private CardManager cardManager;
     [SerializeField] private CardSO cardsSO;
     [SerializeField] private GameObject card;
+    [SerializeField] private CardManager cardManager;
 
     [Header("XY Coordinates")]
     [SerializeField] private int xDim;
@@ -13,10 +13,11 @@ public class GridManager : MonoBehaviour
 
     private float xScale, yScale;
 
-    private void Awake()
+    public void Init(CardInfo[,] cardInfos)
     {
-        cardsSO.InitCardsDict(); // need to be moved from here and called when level starts
+        cardsSO.InitCardsDict(cardInfos);
         cardManager.InitCards(xDim, yDim);
+        cardManager.InitCardInfos(xDim, yDim, cardInfos);
 
         var cardTransform = card.transform.GetChild(0);
         xScale = cardTransform.localScale.x / 2;
@@ -25,6 +26,7 @@ public class GridManager : MonoBehaviour
         Debug.Log($"xScale: {xScale}, yScale: {yScale}");
 
         InitBoard();
+        cardManager.OnCardsInitialized();
     }
 
     private void InitBoard()
@@ -33,11 +35,10 @@ public class GridManager : MonoBehaviour
         {
             for (int x = 0; x < xDim * 2; x+=2)
             {
-                SpawnCard(x, y);
+                if (!cardManager.IsCardMatched(x/2,  y/2))
+                    SpawnCard(x, y);
             }
         }
-
-        cardManager.OnCardsInitialized();
     }
 
     private void SpawnCard(int x, int y)

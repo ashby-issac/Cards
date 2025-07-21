@@ -12,6 +12,15 @@ public enum CardType
     Card8 = 7,
 }
 
+[System.Serializable]
+public class CardInfo
+{
+    public int x, y;
+    public bool isMatched;
+    public CardType cardType;
+    public CardView cardView;
+}
+
 public class Card : MonoBehaviour
 {
     [SerializeField] private Transform front;
@@ -19,36 +28,33 @@ public class Card : MonoBehaviour
     [SerializeField] private MeshRenderer cardFrontRenderer;
 
     public CardSO cardSO;
-
-    private int x, y;
-    private bool isFlipped;
-    private CardType cardType;
-    private CardView cardView;
-
-    public int X => x;
-    public int Y => y;
-
-    public bool IsFlipped => isFlipped;
-    public CardType CardType => cardType;
-
     public CardRotator CardRotator;
     public CardInput CardInput;
 
-    public void Init(int x, int y, bool isFlipped)
+    private CardInfo cardInfo;
+
+    public int X => cardInfo.x;
+    public int Y => cardInfo.y;
+
+    public CardType CardType => cardInfo.cardType;
+    public CardInfo CardInfo => cardInfo;
+
+    public void Init(int x, int y)
     {
-        this.x = x;
-        this.y = y;
-        this.isFlipped = isFlipped;
+        cardInfo = new CardInfo();
 
-        // Move this code and call when the game starts
-        cardType = cardSO.GetCardType();
-        cardView = cardSO.GetCardView(cardType);
+        cardInfo.x = x;
+        cardInfo.y = y;
 
-        cardFrontRenderer.material.color = cardView.color;
+        cardInfo.cardType = Level.SavedCards ? cardSO.GetCardType(x, y) : cardSO.GetCardType();
+        cardInfo.cardView = cardSO.GetCardView(cardInfo.cardType);
+
+        cardFrontRenderer.material.color = cardInfo.cardView.color;
     }
 
     public void HideCard()
     {
+        cardInfo.isMatched = true;
         gameObject.SetActive(false);
         CardInput.enabled = false;
     }

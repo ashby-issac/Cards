@@ -18,7 +18,10 @@ public class CardSO : ScriptableObject
     public CardView[] cardViewDatas;
 
     private int maxPairCount = 2;
-    private Dictionary<CardType, int> cardViewDic = new Dictionary<CardType, int>();
+    private int totalCards = 0, pairsCounter;
+
+    private List<(CardType key, int value)> cardViewList = new List<(CardType, int)>();
+
     private CardInfo[,] cardInfos;
 
     public CardView GetCardView(CardType cardType)
@@ -26,9 +29,12 @@ public class CardSO : ScriptableObject
         return cardViewDatas.FirstOrDefault(data  => data.cardType == cardType);
     }
 
-    public void InitCardsDict(CardInfo[,] cardInfos)
+    public void Init(CardInfo[,] cardInfos, int totalCards)
     {
         ClearPrevData();
+
+        this.totalCards = totalCards;
+        pairsCounter = totalCards / 2;
         if (cardInfos != null && cardInfos.Length > 1)
         {
             this.cardInfos = cardInfos;
@@ -36,10 +42,7 @@ public class CardSO : ScriptableObject
             {
                 if (cardInfo.isMatched) continue;
 
-                if (cardViewDic.ContainsKey(cardInfo.cardType))
-                    cardViewDic[cardInfo.cardType] = 0;
-                else
-                    cardViewDic.Add(cardInfo.cardType, 0);
+                cardViewList.Add((cardInfo.cardType, 0));
             }
 
             return;
@@ -47,12 +50,16 @@ public class CardSO : ScriptableObject
 
         Array cardTypes = Enum.GetValues(typeof(CardType));
         foreach (CardType cardType in cardTypes)
-            cardViewDic.Add(cardType, 0);
+        {
+            cardViewList.Add((cardType, 0));
+        }
+
+        Debug.Log($"CardViewDic: {JsonConvert.SerializeObject(cardTypes)}");
     }
 
     private void ClearPrevData()
     {
-        cardViewDic.Clear();
+        cardViewList.Clear();
         cardInfos = null;
     }
 
@@ -64,17 +71,21 @@ public class CardSO : ScriptableObject
     public CardType GetCardType()
     {
         System.Random rand = new System.Random();
-        var keyValuePair = cardViewDic.ElementAt(rand.Next(cardViewDic.Count));
+        int randomIndex = rand.Next(pairsCounter);
+        (CardType, int) pair = cardViewList[randomIndex];
 
-        Debug.Log($"KeyValuePair: {keyValuePair.Key}");
+        Debug.Log($"rand pair.Item1: {pair.Item1}, pair.Item2: {pair.Item2}, randomVal: {randomIndex}");
 
-        if (cardViewDic.ContainsKey(keyValuePair.Key))
-        {
-            cardViewDic[keyValuePair.Key]++;
-            if (cardViewDic[keyValuePair.Key] == maxPairCount)
-                cardViewDic.Remove(keyValuePair.Key);
+        int value = pair.Item2;
+        value++;
+        cardViewList[randomIndex] = (pair.Item1, value);
+
+        if (cardViewList[randomIndex].value == maxPairCount)
+        {       
+            cardViewList.Remove((pair.Item1, value));
+            pairsCounter--;
         }
 
-        return keyValuePair.Key;
+        return pair.Item1;
     }
 }

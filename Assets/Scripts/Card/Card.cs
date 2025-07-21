@@ -10,6 +10,13 @@ public enum CardType
     Card6 = 5,
     Card7 = 6,
     Card8 = 7,
+    Card9 = 8,
+    Card10 = 9,
+    Card11 = 10,
+    Card12 = 11,
+    Card13 = 12,
+    Card14 = 13,
+    Card15 = 14,
 }
 
 [System.Serializable]

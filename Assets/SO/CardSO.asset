@@ -16,16 +16,30 @@ MonoBehaviour:
   - cardType: 0
     color: {r: 1, g: 0, b: 0, a: 1}
   - cardType: 1
-    color: {r: 0, g: 0.7037034, b: 1, a: 1}
+    color: {r: 1, g: 0.66859865, b: 0, a: 1}
   - cardType: 2
-    color: {r: 0, g: 1, b: 0.17600012, a: 1}
+    color: {r: 0.86765337, g: 1, b: 0, a: 1}
   - cardType: 3
-    color: {r: 1, g: 0.41730994, b: 0, a: 1}
+    color: {r: 0.32481933, g: 1, b: 0, a: 1}
   - cardType: 4
-    color: {r: 0.24800014, g: 0, b: 1, a: 1}
+    color: {r: 0, g: 1, b: 0.95716405, a: 1}
   - cardType: 5
-    color: {r: 0.9204545, g: 0, b: 1, a: 1}
+    color: {r: 0, g: 0.4705584, b: 1, a: 1}
   - cardType: 6
-    color: {r: 0, g: 1, b: 0.57142854, a: 1}
+    color: {r: 0.5580807, g: 0, b: 1, a: 1}
   - cardType: 7
-    color: {r: 1, g: 0.88469374, b: 0, a: 1}
+    color: {r: 1, g: 0, b: 0.79149246, a: 1}
+  - cardType: 8
+    color: {r: 0.2735849, g: 0.037321705, b: 0, a: 1}
+  - cardType: 9
+    color: {r: 0.27450982, g: 0.2376385, b: 0, a: 1}
+  - cardType: 10
+    color: {r: 0.1867203, g: 0.27450982, b: 0, a: 1}
+  - cardType: 11
+    color: {r: 0, g: 0.27450982, b: 0.16357131, a: 1}
+  - cardType: 12
+    color: {r: 0, g: 0.11262889, b: 0.27450982, a: 1}
+  - cardType: 13
+    color: {r: 0.08391171, g: 0, b: 0.27450982, a: 1}
+  - cardType: 14
+    color: {r: 0.27450982, g: 0, b: 0.25238073, a: 1}

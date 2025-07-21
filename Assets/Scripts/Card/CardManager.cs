@@ -129,9 +129,14 @@ public class CardManager : MonoBehaviour
 
     private IEnumerator CheckMatch()
     {
+        UIManager.Instance.UpdateTurnsScore(1);
+
         yield return new WaitForSeconds(0.5f);
         if (firstShownCard.CardType == secondShowCard.CardType)
+        {
+            UIManager.Instance.UpdateMatchesScore(1);
             HideMatchedCards();
+        }
         else
             FlipUnmatchedCards();
     }
@@ -142,8 +147,9 @@ public class CardManager : MonoBehaviour
         firstShownCard.CardRotator.TriggerCardsRotation(showCard: false);
         secondShowCard.CardRotator.TriggerCardsRotation(showCard: false, () =>
         {
-            ResetCards();
         });
+
+        ResetCards();
     }
 
     private void ResetCards()

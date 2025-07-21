@@ -11,19 +11,25 @@ public class GridManager : MonoBehaviour
     [SerializeField] private int yDim;
     [SerializeField] private float xSpacing, ySpacing;
 
-    private float xScale, yScale;
+    private float xHalfScale, yHalfScale;
+
+    public float CardScaleY => yHalfScale * 2;
+    public float YSpacing => ySpacing;
+
+    public int XDim => xDim;
+    public int YDim => yDim;
 
     public void Init(CardInfo[,] cardInfos)
     {
-        cardsSO.InitCardsDict(cardInfos);
+        cardsSO.Init(cardInfos, xDim * yDim);
         cardManager.InitCards(xDim, yDim);
         cardManager.InitCardInfos(xDim, yDim, cardInfos);
 
         var cardTransform = card.transform.GetChild(0);
-        xScale = cardTransform.localScale.x / 2;
-        yScale = cardTransform.localScale.y / 2;
+        xHalfScale = cardTransform.localScale.x / 2;
+        yHalfScale = cardTransform.localScale.y / 2;
 
-        Debug.Log($"xScale: {xScale}, yScale: {yScale}");
+        Debug.Log($"xScale: {xHalfScale}, yScale: {yHalfScale}");
 
         InitBoard();
         cardManager.OnCardsInitialized();
@@ -54,6 +60,6 @@ public class GridManager : MonoBehaviour
         var xSpace = x == 0 ? 0 : xSpacing;
         var ySpace = y == 0 ? 0 : ySpacing;
 
-        return new Vector2(xScale + (x * xScale) + (x * xSpace), yScale + (y * yScale) + (y * ySpace));
+        return new Vector2(xHalfScale + (x * xHalfScale) + (x * xSpace), yHalfScale + (y * yHalfScale) + (y * ySpace));
     }
 }

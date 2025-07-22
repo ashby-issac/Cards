@@ -72,8 +72,6 @@ public class CardSO : ScriptableObject
         int randomIndex = rand.Next(pairsCounter);
         (CardType, int) pair = cardViewList[randomIndex];
 
-        Debug.Log($"rand pair.Item1: {pair.Item1}, pair.Item2: {pair.Item2}, randomVal: {randomIndex}");
-
         int value = pair.Item2;
         value++;
         cardViewList[randomIndex] = (pair.Item1, value);

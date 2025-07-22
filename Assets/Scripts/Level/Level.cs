@@ -40,7 +40,6 @@ public class Level : MonoBehaviour
             }
         }
 
-        Debug.Log($"before init: {cardLocalData != null && cardInfos != null}");
         gridManager.Init(cardLocalData != null && cardInfos != null ? cardInfos : default);
         SetCameraPosition();
     }
@@ -54,7 +53,6 @@ public class Level : MonoBehaviour
     public void Restart()
     {
         SceneReload = true;
-        Debug.Log($"SceneReload: Restart");
 
         Invoke(nameof(LoadActiveScene), 1f);
     }

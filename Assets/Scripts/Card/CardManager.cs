@@ -60,7 +60,6 @@ public class CardManager : MonoBehaviour
         else
         {
             this.cardInfos = new CardInfo[xDim, yDim];
-            Debug.Log($"Init card infos");
         }
     }
 
@@ -120,7 +119,6 @@ public class CardManager : MonoBehaviour
             return;
 
         level.SFXManager.PlaySound(AudioType.CardFlip);
-        Debug.Log($"ShowSpecificCard: {x}, {y}");
         cards[x, y].CardInput.isClickable = false;
         cards[x, y].CardRotator.TriggerCardsRotation(showCard: true);
 
@@ -129,13 +127,11 @@ public class CardManager : MonoBehaviour
 
         if (firstShownCard == null)
         {
-            Debug.Log($"Init first show card: ({x}, {y})");
             firstShownCard = cards[x, y];
         }
         else if (secondShownCard == null)
         {
             secondShownCard = cards[x, y];
-            Debug.Log($"Init second show card: ({x}, {y})");
             StartCoroutine(CheckMatch());
         }
     }

@@ -9,10 +9,8 @@ public class CardInput : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log($"OnMouseDown");
         if (!CardManager.Instance.BlockInput && isClickable)
         {
-            Debug.Log($"isClickable: {card.X}, {card.Y}");
             CardManager.Instance.ShowSpecificCard(card.X, card.Y);
         }
     }

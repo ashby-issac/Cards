@@ -18,7 +18,6 @@ public static class UserData
     {
         CardUtility.ConvertToJagged(cardInfos, out cardLocalData.cardInfos);
 
-        Debug.Log($"SceneReload: SaveCardInfo: {Level.SceneReload}");
         if (!Level.SceneReload && unmatchedCardLeft)
             SaveSystem.SaveFile(cardLocalData.cardInfos, CardsData_Constant);
         else
@@ -27,7 +26,6 @@ public static class UserData
 
     public static void SaveChancesInfo(ChancesInfo chancesInfo)
     {
-        Debug.Log($"SceneReload: SaveChancesInfo: {Level.SceneReload}");
         if (!Level.SceneReload)
         {
             cardLocalData.chancesInfo = chancesInfo;

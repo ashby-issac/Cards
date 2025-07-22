@@ -30,7 +30,6 @@ public class CardRotator : MonoBehaviour
     public void TriggerCardsRotation(bool showCard, Action onComplete = null)
     {
         var card = GetComponent<Card>();
-        Debug.Log($"Triggering rotation for card({card.X}, {card.Y}), showCard: {showCard}");
 
         targetRotation = showCard == false ? startRotation : endRotation;
         startRotation = transform.rotation;

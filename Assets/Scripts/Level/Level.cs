@@ -1,10 +1,5 @@
-using Newtonsoft.Json;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Level : MonoBehaviour
 {
@@ -13,14 +8,17 @@ public class Level : MonoBehaviour
     [SerializeField] private float zOffset = 1f;
 
     public static bool SavedCards = false;
+    public static bool SceneReload = false;
     private CardLocalData cardLocalData;
 
     private void Awake()
     {
         CardInfo[,] cardInfos = null;
-        if (SaveSystem.HasKey(CardManager.CardsData_Constant))
+        if (SaveSystem.HasKey(UserData.CardsData_Constant))
         {
-            cardLocalData = SaveSystem.LoadJson<CardLocalData>(CardManager.CardsData_Constant);
+            Debug.Log($"Init cards");
+            cardLocalData = new CardLocalData();
+            cardLocalData.cardInfos = SaveSystem.LoadJson<CardInfo[][]>(UserData.CardsData_Constant);
 
             cardInfos = CardUtility.ConvertTo2D(cardLocalData.cardInfos);
             if (cardInfos != null &&
@@ -30,7 +28,7 @@ public class Level : MonoBehaviour
             }
             else
             {
-                SaveSystem.DeleteSavedFile(CardManager.CardsData_Constant);
+                SaveSystem.DeleteSavedFile(UserData.CardsData_Constant);
             }
         }
 
@@ -47,6 +45,13 @@ public class Level : MonoBehaviour
 
     public void Restart()
     {
+        SceneReload = true;
 
+        Invoke(nameof(LoadActiveScene), 1f);
+    }
+
+    private void LoadActiveScene()
+    {
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
 }

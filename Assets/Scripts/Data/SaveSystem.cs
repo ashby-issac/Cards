@@ -13,7 +13,9 @@ public static class SaveSystem
     {
         string json = PlayerPrefs.GetString(keyName);
         if (!string.IsNullOrWhiteSpace(json))
+        {
             return JsonConvert.DeserializeObject<T>(json);
+        }
 
         return default;
     }
@@ -26,5 +28,6 @@ public static class SaveSystem
     public static void DeleteSavedFile(string keyName)
     {
         PlayerPrefs.DeleteKey(keyName);
+        PlayerPrefs.Save();
     }
 }

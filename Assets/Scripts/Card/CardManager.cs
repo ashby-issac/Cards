@@ -16,13 +16,12 @@ public class CardLocalData
 [System.Serializable]
 public class ChancesInfo
 {
-
+    public int matchesScore;
+    public int turnsScore;
 }
 
 public class CardManager : MonoBehaviour
 {
-    public static string CardsData_Constant = "CardsData";
-
     private Card[,] cards;
     private CardInfo[,] cardInfos;
     private Card firstShownCard = null, secondShowCard = null;
@@ -91,8 +90,6 @@ public class CardManager : MonoBehaviour
 
             card.CardRotator.TriggerCardsRotation(showCard: true);
         }
-        //var card = cards[0, 0];
-        //card.CardRotator.TriggerCardsRotation(showCard: true);
 
         yield return new WaitForSeconds(1f);
 
@@ -105,12 +102,6 @@ public class CardManager : MonoBehaviour
                 BlockInput = false;
             });
         }
-
-        //card.CardRotator.TriggerCardsRotation(showCard: false, () =>
-        //{
-        //    BlockInput = false;
-        //    Debug.Log($"Block input: {BlockInput}");
-        //});
     }
 
     public void ShowSpecificCard(int x, int y)
@@ -141,7 +132,6 @@ public class CardManager : MonoBehaviour
             FlipUnmatchedCards();
     }
 
-    // should be called when there's no match
     public void FlipUnmatchedCards()
     {
         firstShownCard.CardRotator.TriggerCardsRotation(showCard: false);
@@ -171,27 +161,7 @@ public class CardManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // check if ondestroy is called properly   
-        Debug.LogError($"OnDestroy");
-
-        CardLocalData cardLocalData = new CardLocalData();
-
-        int x = cardInfos.GetLength(0);
-        int y = cardInfos.GetLength(1);
-
-        CardUtility.ConvertToJagged(cardInfos, out cardLocalData.cardInfos);
-        Debug.Log($"CardInfos Count: {cardLocalData.cardInfos.Count()}");
-        
-        if (FindUnmatchedCards())
-        {
-            Debug.Log($"cardLocalData: {JsonConvert.SerializeObject(cardLocalData.cardInfos)}");
-            SaveSystem.SaveFile(cardLocalData, CardsData_Constant);
-        }
-        else
-        {
-            Debug.Log($"all cards matched");
-            SaveSystem.DeleteSavedFile(CardsData_Constant);
-        }
+        UserData.SaveCardInfos(cardInfos, unmatchedCardLeft: FindUnmatchedCards());
     }
 
     private bool FindUnmatchedCards()
@@ -201,6 +171,7 @@ public class CardManager : MonoBehaviour
             {
                 return true;
             }
+
         return false;
     }
 }

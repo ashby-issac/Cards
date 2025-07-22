@@ -29,8 +29,6 @@ public class GridManager : MonoBehaviour
         xHalfScale = cardTransform.localScale.x / 2;
         yHalfScale = cardTransform.localScale.y / 2;
 
-        Debug.Log($"xScale: {xHalfScale}, yScale: {yHalfScale}");
-
         InitBoard();
         cardManager.OnCardsInitialized();
     }
@@ -51,6 +49,7 @@ public class GridManager : MonoBehaviour
     {
         GameObject cardInstance = Instantiate(card, GetWorldPos(x, y), Quaternion.identity);
         cardInstance.transform.parent = transform;
+        cardInstance.transform.name = $"({x/2}, {y/2})";
 
         cardManager.AddCard(cardInstance, x/2, y/2);
     }

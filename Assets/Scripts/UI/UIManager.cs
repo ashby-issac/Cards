@@ -11,31 +11,28 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI matchesScoreText;
     [SerializeField] private TextMeshProUGUI turnsScoreText;
     [SerializeField] private Button restartBtn;
+    [SerializeField] private TextMeshProUGUI gameOverText;
 
     public static UIManager Instance;
 
     private ChancesInfo chancesInfo;
-    private int matchesScore, turnsScore;
+
+    public ChancesInfo ChancesInfo => chancesInfo;
 
     private void Awake()
     {
         Instance = this;
 
         if (SaveSystem.HasKey(UserData.ChancesData_Constant))
-        {
             chancesInfo = SaveSystem.LoadJson<ChancesInfo>(UserData.ChancesData_Constant);
-            UpdateTexts();
-        }
         else
-        {
             chancesInfo = new ChancesInfo();
-        }
+
+        UpdateTexts();
     }
 
     private void OnEnable()
     {
-        matchesScore = 0;
-        turnsScore = 0;
         restartBtn.onClick.AddListener(() => level.Restart());
     }
 
@@ -51,19 +48,27 @@ public class UIManager : MonoBehaviour
 
     public void UpdateMatchesScore(int scoreToAdd)
     {
-        chancesInfo.matchesScore += scoreToAdd;
-        matchesScoreText.text = $"{chancesInfo.matchesScore}";
+        chancesInfo.matchesCount += scoreToAdd;
+        matchesScoreText.text = $"{chancesInfo.matchesCount}";
     }
 
     public void UpdateTurnsScore(int scoreToAdd)
     {
-        chancesInfo.turnsScore += scoreToAdd;
-        turnsScoreText.text = $"{chancesInfo.turnsScore}";
+        chancesInfo.turnsCount += scoreToAdd;
+        turnsScoreText.text = $"{chancesInfo.turnsCount}";
     }
 
     public void UpdateTexts()
     {
-        matchesScoreText.text = $"{chancesInfo.matchesScore}";
-        turnsScoreText.text = $"{chancesInfo.turnsScore}";
+        if (chancesInfo == null) chancesInfo = new ChancesInfo();
+
+        SetGameOverText(false);
+        matchesScoreText.text = $"{chancesInfo.matchesCount}";
+        turnsScoreText.text = $"{chancesInfo.turnsCount}";
+    }
+
+    public void SetGameOverText(bool state)
+    {
+        gameOverText.gameObject.SetActive(state);
     }
 }

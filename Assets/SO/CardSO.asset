@@ -32,7 +32,7 @@ MonoBehaviour:
   - cardType: 8
     color: {r: 0.2735849, g: 0.037321705, b: 0, a: 1}
   - cardType: 9
-    color: {r: 0.27450982, g: 0.2376385, b: 0, a: 1}
+    color: {r: 0, g: 0, b: 0, a: 1}
   - cardType: 10
     color: {r: 0.1867203, g: 0.27450982, b: 0, a: 1}
   - cardType: 11

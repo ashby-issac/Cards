@@ -7,6 +7,7 @@ public static class SaveSystem
     {
         string json = JsonConvert.SerializeObject(data);
         PlayerPrefs.SetString(keyName, json);
+        PlayerPrefs.Save();
     }
 
     public static T LoadJson<T>(string keyName)

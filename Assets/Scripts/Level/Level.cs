@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,18 +10,25 @@ public class Level : MonoBehaviour
 
     public static bool SavedCards = false;
     public static bool SceneReload = false;
-    private CardLocalData cardLocalData;
+    public static bool GameOver = false;
+
+    private CardLocalData cardLocalData = null;
+
+    public SFXManagger SFXManager;
 
     private void Awake()
     {
+        SavedCards = false;
+
         CardInfo[,] cardInfos = null;
         if (SaveSystem.HasKey(UserData.CardsData_Constant))
         {
-            Debug.Log($"Init cards");
             cardLocalData = new CardLocalData();
             cardLocalData.cardInfos = SaveSystem.LoadJson<CardInfo[][]>(UserData.CardsData_Constant);
 
-            cardInfos = CardUtility.ConvertTo2D(cardLocalData.cardInfos);
+            if (cardLocalData.cardInfos != null)
+                cardInfos = CardUtility.ConvertTo2D(cardLocalData.cardInfos);
+
             if (cardInfos != null &&
                 cardInfos.GetLength(0) * cardInfos.GetLength(1) == gridManager.XDim * gridManager.YDim)
             {
@@ -32,26 +40,27 @@ public class Level : MonoBehaviour
             }
         }
 
-        gridManager.Init(cardLocalData != null && cardInfos != null ? cardInfos : new CardInfo[0, 0]);
+        Debug.Log($"before init: {cardLocalData != null && cardInfos != null}");
+        gridManager.Init(cardLocalData != null && cardInfos != null ? cardInfos : default);
         SetCameraPosition();
     }
 
     private void SetCameraPosition()
     {
         float value = (gridManager.YDim * gridManager.CardScaleY) + (gridManager.YDim * gridManager.YSpacing);
-        Debug.Log($"value: {value}");
         mainCamera.transform.position = new Vector3(0, value/2, - (value + zOffset));
     }
 
     public void Restart()
     {
         SceneReload = true;
+        Debug.Log($"SceneReload: Restart");
 
         Invoke(nameof(LoadActiveScene), 1f);
     }
 
     private void LoadActiveScene()
     {
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

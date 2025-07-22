@@ -6,6 +6,7 @@ public static class UserData
 {
     public static string CardsData_Constant = "CardsData";
     public static string ChancesData_Constant = "ChancesData";
+
     public static CardLocalData cardLocalData;
 
     static UserData()
@@ -17,21 +18,22 @@ public static class UserData
     {
         CardUtility.ConvertToJagged(cardInfos, out cardLocalData.cardInfos);
 
-        if (unmatchedCardLeft && !Level.SceneReload)
-        {
+        Debug.Log($"SceneReload: SaveCardInfo: {Level.SceneReload}");
+        if (!Level.SceneReload && unmatchedCardLeft)
             SaveSystem.SaveFile(cardLocalData.cardInfos, CardsData_Constant);
-        }
         else
-        {
             SaveSystem.DeleteSavedFile(CardsData_Constant);
-        }
     }
 
     public static void SaveChancesInfo(ChancesInfo chancesInfo)
     {
-        if (Level.SceneReload) return;
-
-        cardLocalData.chancesInfo = chancesInfo;
-        SaveSystem.SaveFile(cardLocalData.chancesInfo, ChancesData_Constant);
+        Debug.Log($"SceneReload: SaveChancesInfo: {Level.SceneReload}");
+        if (!Level.SceneReload)
+        {
+            cardLocalData.chancesInfo = chancesInfo;
+            SaveSystem.SaveFile(cardLocalData.chancesInfo, ChancesData_Constant);
+        }
+        else
+            SaveSystem.DeleteSavedFile(ChancesData_Constant);
     }
 }

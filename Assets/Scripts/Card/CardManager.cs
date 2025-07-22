@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,19 +17,25 @@ public class CardLocalData
 [System.Serializable]
 public class ChancesInfo
 {
-    public int matchesScore;
-    public int turnsScore;
+    public int matchesCount;
+    public int turnsCount;
 }
 
 public class CardManager : MonoBehaviour
 {
+    [SerializeField] private Level level;
+    [SerializeField] private float cardsFlipDelay = 1.0f;
+    [SerializeField] private float inputDelay = 1.0f;
+
     private Card[,] cards;
     private CardInfo[,] cardInfos;
-    private Card firstShownCard = null, secondShowCard = null;
+    private Card firstShownCard = null, secondShownCard = null;
+    private Queue<Card> queue = new Queue<Card>();
 
     private bool cardInfosInitialized;
+    private float xDim, yDim;
 
-    public bool BlockInput = false;
+    public bool BlockInput = true;
     public static CardManager Instance;
 
     private void Awake()
@@ -38,6 +45,8 @@ public class CardManager : MonoBehaviour
 
     public void InitCards(int xDim, int yDim)
     {
+        this.xDim = xDim;
+        this.yDim = yDim;
         cards = new Card[xDim, yDim];
     }
 
@@ -81,39 +90,52 @@ public class CardManager : MonoBehaviour
 
     public IEnumerator ShowAllCards()
     {
-        BlockInput = true;
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(cardsFlipDelay);
+        TriggerCardsRotation(true);
 
+        yield return new WaitForSeconds(cardsFlipDelay);
+        TriggerCardsRotation(false);
+
+        Invoke(nameof(EnableInput), inputDelay);
+    }
+
+    private void TriggerCardsRotation(bool showCard)
+    {
         foreach (var card in cards)
         {
             if (card == null) continue;
 
-            card.CardRotator.TriggerCardsRotation(showCard: true);
+            card.CardRotator.TriggerCardsRotation(showCard);
         }
+    }
 
-        yield return new WaitForSeconds(1f);
-
-        foreach (var card in cards)
-        {
-            if (card == null) continue;
-
-            card.CardRotator.TriggerCardsRotation(showCard: false, () =>
-            {
-                BlockInput = false;
-            });
-        }
+    private void EnableInput()
+    {
+        BlockInput = false;
     }
 
     public void ShowSpecificCard(int x, int y)
     {
+        if (CheckGameOverCondition())
+            return;
+
+        level.SFXManager.PlaySound(AudioType.CardFlip);
+        Debug.Log($"ShowSpecificCard: {x}, {y}");
+        cards[x, y].CardInput.isClickable = false;
         cards[x, y].CardRotator.TriggerCardsRotation(showCard: true);
 
+        if (!queue.Contains(cards[x, y]))
+            queue.Enqueue(cards[x, y]);
+
         if (firstShownCard == null)
-            firstShownCard = cards[x, y];
-        else if (secondShowCard == null)
         {
-            secondShowCard = cards[x, y];
-            BlockInput = true;
+            Debug.Log($"Init first show card: ({x}, {y})");
+            firstShownCard = cards[x, y];
+        }
+        else if (secondShownCard == null)
+        {
+            secondShownCard = cards[x, y];
+            Debug.Log($"Init second show card: ({x}, {y})");
             StartCoroutine(CheckMatch());
         }
     }
@@ -122,41 +144,58 @@ public class CardManager : MonoBehaviour
     {
         UIManager.Instance.UpdateTurnsScore(1);
 
+        bool isMatch = firstShownCard.CardType == secondShownCard.CardType;
+        firstShownCard = secondShownCard = null;
+
         yield return new WaitForSeconds(0.5f);
-        if (firstShownCard.CardType == secondShowCard.CardType)
+        if (isMatch)
         {
             UIManager.Instance.UpdateMatchesScore(1);
             HideMatchedCards();
         }
         else
             FlipUnmatchedCards();
+
+        level.SFXManager.PlaySound(isMatch ? AudioType.CardMatch : AudioType.CardMismatch);
+    }
+
+    public bool CheckGameOverCondition()
+    {
+        ChancesInfo chancesInfo = UIManager.Instance.ChancesInfo;
+        if (chancesInfo.turnsCount >= (xDim * yDim) * 2)
+        {
+            level.SFXManager.PlaySound(AudioType.GameOver);
+            BlockInput = true;
+            UIManager.Instance.SetGameOverText(true);
+            TriggerCardsRotation(true);
+            return true;
+        }
+
+        return false;
     }
 
     public void FlipUnmatchedCards()
     {
-        firstShownCard.CardRotator.TriggerCardsRotation(showCard: false);
-        secondShowCard.CardRotator.TriggerCardsRotation(showCard: false, () =>
-        {
-        });
+        var card1 = queue.Dequeue();
+        var card2 = queue.Dequeue();
 
-        ResetCards();
-    }
-
-    private void ResetCards()
-    {
-        firstShownCard = secondShowCard = null;
-        BlockInput = false;
+        card1.CardRotator.TriggerCardsRotation(showCard: false, () => card1.CardInput.isClickable = true);
+        card2.CardRotator.TriggerCardsRotation(showCard: false, () => card2.CardInput.isClickable = true);
     }
 
     public void HideMatchedCards()
     {
-        firstShownCard.HideCard();
-        secondShowCard.HideCard();
+        var card1 = queue.Dequeue();
+        var card2 = queue.Dequeue();
 
-        cardInfos[firstShownCard.X, firstShownCard.Y] = firstShownCard.CardInfo;
-        cardInfos[secondShowCard.X, secondShowCard.Y] = secondShowCard.CardInfo;
+        card1.HideCard();
+        card2.HideCard();
 
-        ResetCards();
+        cardInfos[card1.X, card1.Y] = card1.CardInfo;
+        cardInfos[card2.X, card2.Y] = card2.CardInfo;
+
+        card1.CardInput.isClickable = true;
+        card2.CardInput.isClickable = true;
     }
 
     private void OnDestroy()
@@ -168,9 +207,7 @@ public class CardManager : MonoBehaviour
     {
         foreach (var data in cardInfos)
             if (!data.isMatched)
-            {
                 return true;
-            }
 
         return false;
     }

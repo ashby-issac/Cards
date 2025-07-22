@@ -53,8 +53,6 @@ public class CardSO : ScriptableObject
         {
             cardViewList.Add((cardType, 0));
         }
-
-        Debug.Log($"CardViewDic: {JsonConvert.SerializeObject(cardTypes)}");
     }
 
     private void ClearPrevData()
